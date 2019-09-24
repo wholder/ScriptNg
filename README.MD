@@ -1,4 +1,4 @@
-<p align="left"><img src="https://github.com/wholder/ScriptNg/blob/master/images/ScriptRunner%20Screenshot.png?sanitize=true"></p>
+<p align="center"><img src="https://github.com/wholder/ScriptNg/blob/master/images/ScriptRunner%20Screenshot.png?sanitize=true"></p>
 
 ScriptNg is an experimental interperter for a simple scripting language I'm developing.  The included ScriptRunner class (shown above) provides an easy way to try out the ScriptNg interpreter by running the sample script, or writing your own.  ScriptRunner provides the following features:
 
