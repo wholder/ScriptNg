@@ -160,7 +160,7 @@ public class ScriptRunner extends JFrame {
       }
     });
     code.setText(getFile("res:loop.script"));
-    setSize(600, 900);
+    setSize(600, 800);
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     setLocation(prefs.getInt("window.x", 10), prefs.getInt("window.y", 10));
     // Track window resize/move events and save in prefs
