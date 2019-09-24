@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="ScriptNg:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ScriptNg_jar</output-path>
+    <root id="archive" name="ScriptNg.jar">
+      <element id="module-output" name="ScriptNg" />
+    </root>
+  </artifact>
+</component>

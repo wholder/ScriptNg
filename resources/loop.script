@@ -1,0 +1,34 @@
+// Test code
+start = millis()
+println(trunc(1.0 / 3, 4))
+
+function sum (a, b)
+	return a + b
+end
+
+println("loop 3 times")
+for (jj = 0; jj < 3; jj++)
+	println("jj == " + jj)
+end
+
+ii = 0
+println("loop 5 times")
+while (ii < 5)
+	print("ii == " + ii + " - ")
+	if ((ii & 1) == 1)
+	    print("odd ")
+	elif (ii == 2)
+	    print(" bingo! ")
+	else
+	    print("even ")
+	jj = 0
+	while (jj < ii)
+		print(".")
+		jj = jj + 1
+	end
+	ii = sum(ii, 1)
+	println("")
+end
+println("done")
+time = millis() - start
+return "execution time " + time + " ms"
