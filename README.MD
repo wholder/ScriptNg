@@ -1,6 +1,6 @@
 <p align="center"><img src="https://github.com/wholder/ScriptNg/blob/master/images/ScriptRunner%20Screenshot.png?sanitize=true"></p>
 
-ScriptNg is an experimental interperter for a simple scripting language I'm developing.  The included ScriptRunner class (shown above) provides an easy way to try out the ScriptNg interpreter by running the sample script, or writing your own.  ScriptRunner provides the following features:
+ScriptNg is an experimental interpreter for a simple scripting language I'm developing.  The included ScriptRunner class (shown above) provides an easy way to try out the ScriptNg interpreter by running the sample script, or writing your own.  ScriptRunner provides the following features:
 
    - Press "RUN" ScriptNg scripts at full speed, or use the "Run" menu to set the run speed and watch the code animate line by line
    - Use "STEP" button to manually advance through program line by line, or "STOP" to cancel execution
