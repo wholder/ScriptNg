@@ -1,6 +1,5 @@
 // Test code
 start = millis()
-println(trunc(1.0 / 3, 4))
 
 function sum (a, b)
 	return a + b
@@ -21,11 +20,6 @@ while (ii < 5)
 	    print(" bingo! ")
 	else
 	    print("even ")
-	jj = 0
-	while (jj < ii)
-		print(".")
-		jj = jj + 1
-	end
 	ii = sum(ii, 1)
 	println("")
 end
