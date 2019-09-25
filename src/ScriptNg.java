@@ -25,7 +25,7 @@ class ScriptNg {
   static class StoppedException extends IllegalStateException { }
 
   interface RunCallback {
-    void callback (int lineNum) throws StoppedException;
+    void callback (int lineNum, Map<String,Object> vars) throws StoppedException;
   }
 
   static class Node {
@@ -139,9 +139,9 @@ class ScriptNg {
     }
   }
 
-  private void lineCheck (int lineNum) throws StoppedException {
+  private void lineCheck (int lineNum, Map<String,Object> vars) throws StoppedException {
     if (callback != null) {
-      callback.callback(lineNum);
+      callback.callback(lineNum, vars);
     }
     // Pause so an infinite loop in script doesn't lock up JVM
     try {
@@ -161,7 +161,7 @@ class ScriptNg {
     Object retVal = null;
     for (int ii = 0; ii < nodes.size(); ii++) {
       Node item = nodes.get(ii);
-      lineCheck(item.lineNum);
+      lineCheck(item.lineNum, vals);
       if (item.isList()) {
         eval(item.nodes, vals);
       } else {
@@ -225,7 +225,7 @@ class ScriptNg {
           }
           block = nodes.get(ii + 1);
           while (!block.isList() && block.line.startsWith("elif")) {
-            lineCheck(block.lineNum);
+            lineCheck(block.lineNum, vals);
             line = block.line.substring(4).trim();
             ii++;
             block = nodes.get(ii + 1);
@@ -247,7 +247,7 @@ class ScriptNg {
           }
           block = nodes.get(ii + 1);
           if (!block.isList() && block.line.startsWith("else")) {
-            lineCheck(block.lineNum);
+            lineCheck(block.lineNum, vals);
             ii++;
             block = nodes.get(ii + 1);
             if (block.isList()) {

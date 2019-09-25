@@ -16,9 +16,14 @@
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -29,6 +34,7 @@ public class ScriptRunner extends JFrame {
   private transient Preferences prefs = Preferences.userRoot().node(this.getClass().getName());
   private CodeEditPane  output;
   private CodeEditPane  code;
+  private VarTree       variables;
   private BitSet        breakpoints = new BitSet();
   private int           runDelay;
   private boolean       running;
@@ -48,16 +54,68 @@ public class ScriptRunner extends JFrame {
     Run, Step
   }
 
+  private static class VarTree extends JTree {
+    TreeItem          rootNode = new TreeItem("");
+    DefaultTreeModel treeModel;
+
+    private static class TreeItem extends DefaultMutableTreeNode {
+      TreeItem (String name) {
+        super(name);
+      }
+    }
+
+    private static class TreeList extends TreeItem {
+      TreeList (String name, Map<Integer,Object> values) {
+        super(name + " size: " + values.size());
+        for (int idx : values.keySet()) {
+          Object value = values.get(idx);
+          add(new TreeItem(name + "[" + idx + "] = " + value));
+        }
+      }
+    }
+
+    VarTree () {
+      treeModel = new DefaultTreeModel(rootNode);
+      setModel(treeModel);
+      DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+      renderer.setLeafIcon(null);
+      renderer.setClosedIcon(null);
+      renderer.setOpenIcon(null);
+      setCellRenderer(renderer);
+      setRootVisible(false);
+      setShowsRootHandles(true);
+      getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+    }
+
+    @SuppressWarnings("unchecked")
+    void update (Map<String,Object> values) {
+      rootNode.removeAllChildren();
+      for (String name : values.keySet()) {
+        Object value = values.get(name);
+        if (value instanceof Map) {
+          rootNode.add(new TreeList(name, (Map<Integer,Object>) value));
+        } else {
+          rootNode.add(new TreeItem(name + " = " + value));
+        }
+      }
+      treeModel.reload();
+    }
+  }
+
   private ScriptRunner () throws IOException {
     super("Script Runner");
     setLayout(new BorderLayout());
     output = new CodeEditPane("Output", false, false, false);
+    variables = new VarTree();
+    variables.setFont(CodeEditPane.getCodeFont(12));
+    JScrollPane treeView = new JScrollPane(variables);
+    variables.setBorder(BorderFactory.createTitledBorder("Variables"));
+    JSplitPane hSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, output, treeView);
     code = new CodeEditPane("Script", true, true, true);
     code.addBreakpointListener((line, value) -> breakpoints.set(line, value));
-    JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, output, code);
-    splitPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-    add(splitPane, BorderLayout.CENTER);
-    splitPane.setDividerLocation(240);
+    JSplitPane vSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, hSplit, code);
+    vSplit.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    add(vSplit, BorderLayout.CENTER);
     // Add MenuBar
     JMenuBar menuBar = new JMenuBar();
     setJMenuBar(menuBar);
@@ -160,9 +218,17 @@ public class ScriptRunner extends JFrame {
       }
     });
     code.setText(getFile("res:loop.script"));
-    setSize(600, 800);
+    Toolkit kit = Toolkit.getDefaultToolkit();
+    if (kit.getLockingKeyState(KeyEvent.VK_CAPS_LOCK)) {
+      // Setup window for GitHub screen shot
+      prefs.putInt("window.wid", 600);
+      prefs.putInt("window.hyt", 715);
+      prefs.putInt("split.hor", 430);
+      prefs.putInt("split.ver", 215);
+    }
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     setLocation(prefs.getInt("window.x", 10), prefs.getInt("window.y", 10));
+    setSize(prefs.getInt("window.wid", 600), prefs.getInt("window.hyt", 715));
     // Track window resize/move events and save in prefs
     addComponentListener(new ComponentAdapter() {
       public void componentMoved (ComponentEvent ev) {
@@ -170,7 +236,30 @@ public class ScriptRunner extends JFrame {
         prefs.putInt("window.x", bounds.x);
         prefs.putInt("window.y", bounds.y);
       }
+      public void componentResized (ComponentEvent ev) {
+        Rectangle bounds = ev.getComponent().getBounds();
+        prefs.putInt("window.wid", bounds.width);
+        prefs.putInt("window.hyt", bounds.height);
+        System.out.println("window.wid = " + bounds.width);
+        System.out.println("window.hyt = " + bounds.height);
+      }
     });
+    // SetHorizontalSplit setting for output/variables panes
+    hSplit.setDividerLocation(prefs.getInt("split.hor", 430));
+    hSplit.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
+        pce -> {
+          int split = (Integer) pce.getNewValue();
+          prefs.putInt("split.hor", split);
+          System.out.println("split.hor = " + split);
+        });
+    // Set Vertical Split setting for output/variables and code panes
+    vSplit.setDividerLocation(prefs.getInt("split.ver", 215));
+    vSplit.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY,
+        pce -> {
+          int split = (Integer) pce.getNewValue();
+          prefs.putInt("split.ver", split);
+          System.out.println("split.ver = " + split);
+        });
     setVisible(true);
   }
 
@@ -190,10 +279,11 @@ public class ScriptRunner extends JFrame {
       stopPressed.set(false);
       ScriptNg runner = new ScriptNg(script, funcs);
       stopPressed.set(false);
-      Object ret = runner.run(lineNum -> {
+      Object ret = runner.run((lineNum, vars) -> {
         boolean clearHighlight = false;
         if ((runState == RunState.Run && breakpoints.get(lineNum)) || runState == RunState.Step) {
           code.highlightLine(lineNum);
+          variables.update(vars);
           clearHighlight = true;
           runButton.setEnabled(true);
           stepButton.setEnabled(true);
@@ -209,12 +299,13 @@ public class ScriptRunner extends JFrame {
               runPressed.set(false);
               break;
             }
-            wait(10);
+            ScriptRunner.this.wait(10);
           }
           runButton.setEnabled(false);
           stepButton.setEnabled(false);
-        } else  if (runDelay > 0) {
+        } else if (runDelay > 0) {
           code.highlightLine(lineNum);
+          variables.update(vars);
           clearHighlight = true;
         }
         int delayCount = runState == RunState.Run ? runDelay / 10 : 0;
@@ -228,7 +319,7 @@ public class ScriptRunner extends JFrame {
             }
           }
           if (delayCount-- > 0) {
-            wait(10);
+            ScriptRunner.this.wait(10);
           }
         } while (delayCount > 0);
         if (clearHighlight) {

@@ -1,5 +1,4 @@
-// Test code
-start = millis()
+// Example ScriptNg code
 
 function sum (a, b)
 	return a + b
@@ -10,8 +9,8 @@ for (jj = 0; jj < 3; jj++)
 	println("jj == " + jj)
 end
 
-ii = 0
 println("loop 5 times")
+ii = 0
 while (ii < 5)
 	print("ii == " + ii + " - ")
 	if ((ii & 1) == 1)
@@ -23,6 +22,4 @@ while (ii < 5)
 	ii = sum(ii, 1)
 	println("")
 end
-println("done")
-time = millis() - start
-return "execution time " + time + " ms"
+return "done"

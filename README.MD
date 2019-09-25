@@ -8,6 +8,7 @@ ScriptNg is an experimental interpreter for a simple scripting language I'm deve
    - After hitting a breakpoint you can press "RUN" to resume running, "STEP" to advance one line, or "STOP" to cancel execution
    - You can also press "STOP" to pause running code, then use "STEP" or "RUN" to continue, or press "STOP" again to cancel execution
    - Use the File menu to Read or Save .script files, or select "New" to clear the edit pane.
+   - When using STEP or stopped at a breakpoint, the "Variables" pane shows the current values of each variable in the current scope
    
 Note: Currently, ScriptRunner will let you set nonfunctional breakpoints on blanks lines, so don't expect these to work.
 

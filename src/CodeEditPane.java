@@ -43,16 +43,17 @@ class CodeEditPane extends JPanel {
     public View create (Element elem) {
       String kind = elem.getName();
       if (kind != null) {
-        if (kind.equals(AbstractDocument.ContentElementName)) {
-          return new LabelView(elem);
-        } else if (kind.equals(AbstractDocument.ParagraphElementName)) {
-          return new HighlightParagraphView(elem);
-        } else if (kind.equals(AbstractDocument.SectionElementName)) {
-          return new BoxView(elem, View.Y_AXIS);
-        } else if (kind.equals(StyleConstants.ComponentElementName)) {
-          return new ComponentView(elem);
-        } else if (kind.equals(StyleConstants.IconElementName)) {
-          return new IconView(elem);
+        switch (kind) {
+          case AbstractDocument.ContentElementName:
+            return new LabelView(elem);
+          case AbstractDocument.ParagraphElementName:
+            return new HighlightParagraphView(elem);
+          case AbstractDocument.SectionElementName:
+            return new BoxView(elem, View.Y_AXIS);
+          case StyleConstants.ComponentElementName:
+            return new ComponentView(elem);
+          case StyleConstants.IconElementName:
+            return new IconView(elem);
         }
       }
       return new LabelView(elem);
@@ -372,7 +373,7 @@ class CodeEditPane extends JPanel {
     codePane.setEditable(editable);
   }
 
-  private static Font getCodeFont (int points) {
+  static Font getCodeFont (int points) {
     String os = System.getProperty("os.name").toLowerCase();
     if (os.contains("win")) {
       return new Font("Consolas", Font.PLAIN, points);
@@ -402,11 +403,13 @@ class CodeEditPane extends JPanel {
     if (editable) {
       // Convert all leading spaces to tabs
       StringBuilder buf = new StringBuilder();
-      for (String line : text.split("\n")) {
+      String[] parts = text.split("\n");
+      for (int ii = 0; ii < parts.length; ii++) {
+        String line = parts[ii];
         if (line.length() > 0) {
           int tabCount = 0;
-          for (int ii = 0; ii < line.length(); ii++) {
-            char cc = line.charAt(ii);
+          for (int jj = 0; jj < line.length(); jj++) {
+            char cc = line.charAt(jj);
             if (cc == ' ') {
               if (++tabCount == TAB_SIZE) {
                 buf.append("\t");
@@ -415,8 +418,10 @@ class CodeEditPane extends JPanel {
             } else if (cc == '\t') {
               buf.append(cc);
             } else {
-              buf.append(line.substring(ii).trim());
-              buf.append("\n");
+              buf.append(line.substring(jj).trim());
+              if (ii < parts.length - 1) {
+                buf.append("\n");
+              }
               break;
             }
           }
