@@ -283,6 +283,9 @@ class ScriptNg {
         }
       }
     }
+    if (callback != null) {
+      callback.callback(0, vals);
+    }
     return retVal;
   }
 }

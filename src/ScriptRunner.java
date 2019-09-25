@@ -243,8 +243,6 @@ public class ScriptRunner extends JFrame {
         Rectangle bounds = ev.getComponent().getBounds();
         prefs.putInt("window.wid", bounds.width);
         prefs.putInt("window.hyt", bounds.height);
-        System.out.println("window.wid = " + bounds.width);
-        System.out.println("window.hyt = " + bounds.height);
       }
     });
     // SetHorizontalSplit setting for output/variables panes
@@ -253,7 +251,6 @@ public class ScriptRunner extends JFrame {
         pce -> {
           int split = (Integer) pce.getNewValue();
           prefs.putInt("split.hor", split);
-          System.out.println("split.hor = " + split);
         });
     // Set Vertical Split setting for output/variables and code panes
     vSplit.setDividerLocation(prefs.getInt("split.ver", 215));
@@ -261,7 +258,6 @@ public class ScriptRunner extends JFrame {
         pce -> {
           int split = (Integer) pce.getNewValue();
           prefs.putInt("split.ver", split);
-          System.out.println("split.ver = " + split);
         });
     setVisible(true);
   }
@@ -283,50 +279,54 @@ public class ScriptRunner extends JFrame {
       ScriptNg runner = new ScriptNg(script, funcs);
       stopPressed.set(false);
       Object ret = runner.run((lineNum, vars) -> {
-        boolean clearHighlight = false;
-        if ((runState == RunState.Run && breakpoints.get(lineNum)) || runState == RunState.Step) {
-          code.highlightLine(lineNum);
-          variables.update(vars);
-          clearHighlight = true;
-          runButton.setEnabled(true);
-          stepButton.setEnabled(true);
-          while (true) {
+        if (lineNum > 0) {
+          boolean clearHighlight = false;
+          if ((runState == RunState.Run && breakpoints.get(lineNum)) || runState == RunState.Step) {
+            code.highlightLine(lineNum);
+            variables.update(vars);
+            clearHighlight = true;
+            runButton.setEnabled(true);
+            stepButton.setEnabled(true);
+            while (true) {
+              if (stopPressed.get()) {
+                break;
+              } else if (stepPressed.get()) {
+                runState = RunState.Step;
+                stepPressed.set(false);
+                break;
+              } else if (runPressed.get()) {
+                runState = RunState.Run;
+                runPressed.set(false);
+                break;
+              }
+              ScriptRunner.this.wait(10);
+            }
+            runButton.setEnabled(false);
+            stepButton.setEnabled(false);
+          } else if (runDelay > 0) {
+            code.highlightLine(lineNum);
+            variables.update(vars);
+            clearHighlight = true;
+          }
+          int delayCount = runState == RunState.Run ? runDelay / 10 : 0;
+          do {
             if (stopPressed.get()) {
-              break;
-            } else if (stepPressed.get()) {
-              runState = RunState.Step;
-              stepPressed.set(false);
-              break;
-            } else if (runPressed.get()) {
-              runState = RunState.Run;
-              runPressed.set(false);
-              break;
+              if (runState == RunState.Run) {
+                runState = RunState.Step;
+                stopPressed.set(false);
+              } else {
+                throw new ScriptNg.StoppedException();
+              }
             }
-            ScriptRunner.this.wait(10);
+            if (delayCount-- > 0) {
+              ScriptRunner.this.wait(10);
+            }
+          } while (delayCount > 0);
+          if (clearHighlight) {
+            code.highlightLine(0);
           }
-          runButton.setEnabled(false);
-          stepButton.setEnabled(false);
-        } else if (runDelay > 0) {
-          code.highlightLine(lineNum);
+        } else {
           variables.update(vars);
-          clearHighlight = true;
-        }
-        int delayCount = runState == RunState.Run ? runDelay / 10 : 0;
-        do {
-          if (stopPressed.get()) {
-            if (runState == RunState.Run) {
-              runState = RunState.Step;
-              stopPressed.set(false);
-            } else {
-              throw new ScriptNg.StoppedException();
-            }
-          }
-          if (delayCount-- > 0) {
-            ScriptRunner.this.wait(10);
-          }
-        } while (delayCount > 0);
-        if (clearHighlight) {
-          code.highlightLine(0);
         }
       });
       if (ret != null) {
