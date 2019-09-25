@@ -55,7 +55,7 @@ While my **`ExpressionParser`** class' use of Java's BigInteger class to interna
 
 ### Using ScriptRunner to compute 3 as the sum of three cubes
 
-<p align="center"><img src="https://github.com/wholder/ScriptNg/blob/master/images/Cubes3.png.png?sanitize=true"></p>
+<p align="center"><img src="https://github.com/wholder/ScriptNg/blob/master/images/Cubes3.png?sanitize=true"></p>
 
     // Compute 3 as the sum of 3 cubes
     a = 569936821221962380720
