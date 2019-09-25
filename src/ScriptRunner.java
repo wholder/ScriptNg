@@ -66,7 +66,7 @@ public class ScriptRunner extends JFrame {
 
     private static class TreeList extends TreeItem {
       TreeList (String name, Map<Integer,Object> values) {
-        super(name + " size: " + values.size());
+        super(name + " (" + values.size() + " elements)");
         for (int idx : values.keySet()) {
           Object value = values.get(idx);
           add(new TreeItem(name + "[" + idx + "] = " + value));
@@ -99,6 +99,9 @@ public class ScriptRunner extends JFrame {
         }
       }
       treeModel.reload();
+      for (int ii = 0; ii < rootNode.getChildCount(); ii++) {
+        expandRow(ii);
+      }
     }
   }
 
