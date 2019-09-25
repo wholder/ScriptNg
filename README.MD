@@ -53,7 +53,9 @@ The **`ExpressionParser`** class used by ScriptNg supports the following feature
 
 While my **`ExpressionParser`** class' use of Java's BigInteger class to internally represent integers does greatly slow down its ability to calculate, it does allow you to easily write code that can performs calculations with arbitrarily-large integer values.  For an example of where this can be useful, recent episodes of [Numberphile](https://www.youtube.com/user/numberphile/videos) have discussed the discovery the last number below 100 which previously could not be expressed as the sum of three cubes ([The Mystery of 42 is Solved](https://www.youtube.com/watch?v=zyG8Vlw5aAw)).  And, a follow up Numberphile video shows a new way to compute [3 as the sum of the 3 cubes](https://www.youtube.com/watch?v=GXhzZAem7k0&t=732s).  If you want to repeat these calculations yourself, they are easy to perform in ScriptRunner, as shown below: 
 
-### ScriptNg code to compute 3 as the sum of three cubes
+### Using ScriptRunner to compute 3 as the sum of three cubes
+
+<p align="center"><img src="https://github.com/wholder/ScriptNg/blob/master/images/Cubes3.png.png?sanitize=true"></p>
 
     // Compute 3 as the sum of 3 cubes
     a = 569936821221962380720
