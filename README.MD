@@ -10,7 +10,10 @@
    - Use the File menu to Read or Save .script files, or select "New" to clear the edit pane.
    - When using STEP or stopped at a breakpoint, the "Variables" pane shows the current values of each variable in the current scope
    
-Note: Currently, ScriptRunner will let you set nonfunctional breakpoints on blanks lines, so don't expect these to work.
+## Limitations
+
+  - As I mentioned above, this code is still in development and is, therefore, likely to have bugs.
+  - ScriptRunner will let you set breakpoints on blanks lines, but these will not work to stop code execution.
 
 ## Requirements
 The current code and runnable Jar file requires Java 8, or later.  [Click Here to download and install the latest version of Java from Oracle](https://www.java.com/en/download/).  I wrote ScriptNg on a Mac Pro using the _Community_ version of [#IntelliJ IDEA from JetBrains](https://www.jetbrains.com/idea/) and macOs is the only environment where I have extensively tested ScriptNg .  However, as the code is 100% Java, it should also run on MS Windows and Linux systems.
