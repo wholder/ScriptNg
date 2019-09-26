@@ -168,6 +168,16 @@ public class ExpressionParser {
       }
       throw new ExpressionParserError("incorrect arg types for trunc(" + lArg + ", " + rArg + ')');
     });
+    functions.put("radix", (stack) -> {
+      Number rArg = ((NumberVal) stack.removeLast()).getValue();      // rightmost arg
+      Number lArg = ((NumberVal) stack.removeLast()).getValue();      // leftmost arg
+      if (rArg instanceof BigInteger && lArg instanceof BigInteger) {
+        int radix = (rArg).intValue();
+        return ((BigInteger) lArg).toString(radix).toUpperCase();
+      } else {
+        throw new ExpressionParserError("incorrect arg types for radix(" + lArg + ", " + rArg + ')');
+      }
+    });
     functions.put("bit", (stack) -> {
       Number rArg = ((NumberVal) stack.removeLast()).getValue();      // rightmost arg
       Number lArg = ((NumberVal) stack.removeLast()).getValue();      // leftmost arg
