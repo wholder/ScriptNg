@@ -413,7 +413,7 @@ public class ExpressionParser {
    */
   private static Token[] tokenize (String in) {
     int id = 0;
-    in = condenseWhitespace(in) + ' ';    // Trailing space is kluge to for eval of trailing Number or Variable Name
+    in = condenseWhitespace(in) + '\t';    // Trailing space is kluge to for eval of trailing Number or Variable Name
     List<Token> out = new ArrayList<>();
     out.add(new Token(in, Token.Type.EXP));    // Save expression for stack trace display
     int len = in.length();
@@ -456,7 +456,7 @@ public class ExpressionParser {
         case 1: // variable
           if (Character.isLetter(c1)  ||  Character.isDigit(c1)  ||  c1 == '.'  ||  c1 == '_'  ||  c1 == ':') {
             acc.append(c1);
-          } else {
+          } else if (c1 != ' ') {
             String name = acc.toString();
             if (c1 == '(') {
               out.add(new Token(name, Token.Type.FNC));
@@ -654,7 +654,7 @@ public class ExpressionParser {
    * @param funcs Map of  external functions
    * @return Object containing result (Boolean or BigInteger)
    */
-  private static Object eval (Token[] expr, Map<String,Object> vals, Map<String,Function> funcs) {
+  private static Object eval (Token[] expr, Map<String,Object> vals, Map<String,Function> funcs) throws ExpressionParserError {
     try {
       LinkedList<Object> valStack = new LinkedList<>();
       int shortcutId = -1;

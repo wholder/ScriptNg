@@ -134,7 +134,7 @@ class ScriptNg {
     this.callback = callback;
     try {
       return eval(nodes, new HashMap<>());
-    } catch (StoppedException ex) {
+    } catch (ExpressionParser.ExpressionParserError ex) {
       return ex;
     }
   }
