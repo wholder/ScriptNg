@@ -16,7 +16,7 @@ while (ii < 5)
 	if ((ii & 1) == 1)
 	    print("odd ")
 	elif (ii == 2)
-	    print(" bingo! ")
+	    print("bingo! ")
 	else
 	    print("even ")
 	ii = sum(ii, 1)
