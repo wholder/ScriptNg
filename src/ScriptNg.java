@@ -18,9 +18,9 @@ import java.util.*;
  */
 
 class ScriptNg {
-  private List<Node>                              nodes;
-  private Map<String, ExpressionParser.Function>  funcs;
-  private RunCallback                             callback;
+  private final List<Node>                              nodes;
+  private final Map<String, ExpressionParser.Function>  funcs;
+  private RunCallback                                   callback;
 
   static class StoppedException extends IllegalStateException { }
 
@@ -48,8 +48,8 @@ class ScriptNg {
   }
 
   class Function implements ExpressionParser.Function {
-    private List<Node> code;
-    private List<String> args;
+    private final List<Node>    code;
+    private final List<String>  args;
 
     Function (List<Node> code, List<String> args) {
       this.code = code;
@@ -134,7 +134,7 @@ class ScriptNg {
     this.callback = callback;
     try {
       return eval(nodes, new HashMap<>());
-    } catch (ExpressionParser.ExpressionParserError ex) {
+    } catch (Exception ex) {
       return ex;
     }
   }

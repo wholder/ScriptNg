@@ -342,6 +342,7 @@ public class ScriptRunner extends JFrame {
       code.highlightLine(0);
       running = false;
     }).start();
+    stopButton.setEnabled(false);
   }
 
   private void wait (int ms) {
